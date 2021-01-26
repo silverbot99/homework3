@@ -72,27 +72,23 @@ def login():
     if request.method == 'POST' and form.validate:
         # checking that user is exist or not by email
         user = User.query.filter_by(email = form.email.data).first()
-
-        if user:
+        if user is not None:
             # if user exist in database than we will compare our database hased password and password come from login form
             if check_password_hash(user.password, form.password.data):
                 # if password is matched, allow user to access and save email and username inside the session
                 flash('You have successfully logged in.', "success")
-
                 session['logged_in'] = True
-
                 session['email'] = user.email
-
-                session['username'] = user.username
+                session['password'] = user.password
                 # After successful login, redirecting to home page
                 return redirect(url_for('home'))
-
             else:
-
                 # if password is in correct , redirect to login page
-                flash('Username or Password Incorrect', "Danger")
-
+                flash('Email or Password Incorrect', "error")
                 return redirect(url_for('login'))
+        else:
+            app.logger.info('In Else')
+            flash('Account not exist', "error")
     # rendering login page
     return render_template('login.html', form = form)
 
@@ -116,14 +112,14 @@ otp = randint(000000,999999)
 
 @app.route('/one_time_pass/')
 def one_time_pass_direct():
+    email = request.form["email"]
+    msg = Message('OTP', sender='username@gmail.com', recipients=[email])
+    msg.body = str(otp)
+    mail.send(msg)
     return render_template('one_time_pass.html')
 
 @app.route('/verify/',methods=["POST"])
 def verify():
-    email = request.form["email"]
-    msg = Message('OTP', sender='username@gmail.com', recipients= [email])
-    msg.body = str(otp)
-    mail.send(msg)
     return render_template('verify.html')
 
 @app.route('/validate/', methods=["POST"])

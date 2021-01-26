@@ -14,7 +14,7 @@ class LoginForm(Form):
         else:
             pass# raise ValidationError("Your password seems fine!")
 
-    email = StringField("Email", validators=[validators.Length(min=7, max=50), validators.DataRequired(message="Please Fill This Field")])
+    email = StringField("Email", validators=[validators.Email(message="Please enter a valid email address"),validators.Length(min=7, max=50), validators.DataRequired(message="Please Fill This Field")])
 
     password = PasswordField("Password",validators=[check_validation,validators.DataRequired(message="Please Fill Password")])
 
