@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from forms import LoginForm, RegisterForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import *
+from flask_otp import OTP
+
 from random import *
 
 app: Flask = Flask(__name__)
@@ -109,6 +111,31 @@ app.config['MAIL_PASSWORD'] = '*************'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 otp = randint(000000,999999)
+# otp = OTP()
+# otp.init_app(app)
+
+app.config["SECRET_KEY"] = "something"
+app.config["DOMAIN"] = "www.XXX.com"
+
+# @app.route('/qr')
+# def qr():
+#     """
+#     Return a QR code for the secret key
+#     The QR code is returned as file with MIME type image/png.
+#     """
+#     if session.get("OTPKEY", True):
+#         # returns a 16 character base32 secret.
+#         # Compatible with Google Authenticator
+#         session["OTPKEY"] = otp.get_key()
+#     img = otp.qr(session["OTPKEY"])
+#     return send_file(img, mimetype="image/png")
+
+@app.route('/verify/<string:password>')
+def verify(password):
+    """
+    verify the One-Time Password
+    """
+    return str(otp.authenticate(session["OTPKEY"], password))
 
 @app.route('/one_time_pass/')
 def one_time_pass_direct():
@@ -118,11 +145,11 @@ def one_time_pass_direct():
     mail.send(msg)
     return render_template('one_time_pass.html')
 
-@app.route('/verify/',methods=["POST"])
-def verify():
-    return render_template('verify.html')
-
-@app.route('/validate/', methods=["POST"])
+# @app.route('/verify/',methods=["POST"])
+# def verify():
+#     return render_template('verify.html')
+#
+@app.route('/one_time_pass/validate/', methods=["POST"])
 def validate():
     user_otp = request.form['otp']
     if otp == int(user_otp):

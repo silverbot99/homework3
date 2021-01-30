@@ -1,19 +1,42 @@
-{% extends "base.html" %}
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript">
+            function getImageOtp(){
+                $.ajax({
+                    type: "POST",
+                    url: "http://127.0.0.1:5000/one_time_pass/validate/ ",
+                    success: function (data) {
+                        $("#result").html("dfsdfds")
+                  },
+                });
+            }
+            function sendEmail(){
 
-{% from "includes/formhelpers.html" import render_field %}
+            }
+         </script>
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block body %}
+        {% from "includes/formhelpers.html" import render_field %}
 
-<h4>
-    <strong>
-        Login
-    </strong>
-</h4>
-<hr>
+        <h4>
+            <strong>
+                One Time Password
+            </strong>
+        </h4>
+        <hr>
+{#        <button type="button" onclick="return getImageOtp();">Using QR</button>#}
+        <button type="button" onclick="return sendEmail();">Send code to your Email</button>
+    {##}
+    {#    <form method="POST" action="http://127.0.0.1:5000/validate/">#}
+    {#     Email address: <input type="email" name="email">  #}
+    {#        <input type="submit" value="Submit">#}
+    {#    </form>#}
 
-<form method="POST" action="http://127.0.0.1:5000/validate/">
- Email address: <input type="email" name="email">  
-    <input type="submit" value="Submit">
-</form>
-
-<hr>
-{% endblock body %}
+    {% endblock body %}
+</body>
+</html>
